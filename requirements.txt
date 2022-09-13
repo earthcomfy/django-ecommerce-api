@@ -9,6 +9,7 @@ defusedxml==0.7.1
 dj-rest-auth==2.2.4
 Django==4.0.4
 django-allauth==0.50.0
+django-countries==7.3.2
 django-phonenumber-field==6.1.0
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.2.0
@@ -21,6 +22,7 @@ httplib2==0.20.4
 idna==3.3
 oauthlib==3.2.0
 phonenumbers==8.12.47
+Pillow==9.2.0
 protobuf==4.21.1
 psycopg2-binary==2.9.3
 pyasn1==0.4.8
@@ -39,5 +41,6 @@ six==1.16.0
 sqlparse==0.4.2
 toml==0.10.2
 twilio==7.9.3
+typing_extensions==4.3.0
 uritemplate==4.1.1
 urllib3==1.26.9

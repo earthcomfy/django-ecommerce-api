@@ -5,13 +5,14 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from phonenumber_field.serializerfields import PhoneNumberField
+from django_countries.serializers import CountryFieldMixin
 
 from .exceptions import (
     AccountNotRegisteredException,
     InvalidCredentialsException,
     AccountDisabledException,
 )
-from .models import PhoneNumber
+from .models import PhoneNumber, Profile
 
 
 User = get_user_model()
@@ -22,6 +23,8 @@ class UserRegistrationSerializer(RegisterSerializer):
     Serializer for registrating new users using email or phone number.
     """
     username = None
+    first_name = serializers.CharField(required=True, write_only=True)
+    last_name = serializers.CharField(required=True, write_only=True)
     phone_number = PhoneNumberField(
         required=False,
         write_only=True,
@@ -52,9 +55,15 @@ class UserRegistrationSerializer(RegisterSerializer):
     def get_cleaned_data_extra(self):
         return {
             'phone_number': self.validated_data.get('phone_number', ''),
+            "first_name": self.validated_data.get("first_name", ""),
+            "last_name": self.validated_data.get("last_name", ""),
         }
 
-    def create_phone(self, user, validated_data):
+    def create_extra(self, user, validated_data):
+        user.first_name = self.validated_data.get("first_name")
+        user.last_name = self.validated_data.get("last_name")
+        user.save()
+
         phone_number = validated_data.get("phone_number")
 
         if phone_number:
@@ -62,7 +71,7 @@ class UserRegistrationSerializer(RegisterSerializer):
             user.phone.save()
 
     def custom_signup(self, request, user):
-        self.create_phone(user, self.get_cleaned_data_extra())
+        self.create_extra(user, self.get_cleaned_data_extra())
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -162,3 +171,26 @@ class VerifyPhoneNumberSerialzier(serializers.Serializer):
         queryset.check_verification(security_code=otp)
 
         return validated_data
+
+
+class ProfileSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    """
+    Serializer class to serialize the user Profile model
+    """
+    class Meta:
+        model = Profile
+        fields = ('avatar', 'bio', 'country', 'city',
+                  'postal_code', 'created_at', 'updated_at',)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to seralize User model
+    """
+    profile = ProfileSerializer(read_only=True)
+    phone_number = PhoneNumberField(source='phone', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'phone_number', 'first_name',
+                  'last_name', 'is_active', 'profile',)

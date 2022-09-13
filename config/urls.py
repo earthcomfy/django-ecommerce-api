@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, re_path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from dj_rest_auth.registration.views import VerifyEmailView, ResendEmailVerificationView
 from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView, PasswordChangeView, LogoutView
@@ -25,10 +27,16 @@ urlpatterns = [
 
     path('user/login/google/', GoogleLogin.as_view(), name='google_login'),
 
-    path('password/reset/', PasswordResetView.as_view(), name='rest_password_reset'),
-    path('password/reset/confirm/<str:uidb64>/<str:token>', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password/reset/', PasswordResetView.as_view(),
+         name='rest_password_reset'),
+    path('password/reset/confirm/<str:uidb64>/<str:token>',
+         PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
-    path('password/change/', PasswordChangeView.as_view(), name='rest_password_change'),
+    path('password/change/', PasswordChangeView.as_view(),
+         name='rest_password_change'),
 
     path('logout/', LogoutView.as_view(), name='rest_logout'),
 ]
+
+# Media Assets
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

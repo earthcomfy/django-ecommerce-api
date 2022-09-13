@@ -9,6 +9,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import NotAcceptable
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
+from django_countries.fields import CountryField
 
 
 User = get_user_model()
@@ -92,3 +93,19 @@ class PhoneNumber(models.Model):
                 _("Your security code is wrong, expired or this phone is verified before."))
 
         return self.is_verified
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, related_name='profile', on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatar', blank=True)
+    bio = models.CharField(max_length=200, blank=True)
+    country = CountryField()
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username

@@ -1,7 +1,9 @@
 from django.urls import path
 
 from .views import (
+    ProfileAPIView,
     SendOrResendSMSAPIView,
+    UserAPIView,
     UserLoginAPIView,
     UserRegisterationAPIView,
     VerifyPhoneNumberAPIView,
@@ -24,4 +26,8 @@ urlpatterns = [
         VerifyPhoneNumberAPIView.as_view(),
         name='verify_phone_number'
     ),
+
+    path('profile/', ProfileAPIView.as_view(), name='profile_detail'),
+    path('', UserAPIView.as_view(), name='user_detail'),
+
 ]
