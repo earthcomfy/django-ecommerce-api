@@ -6,12 +6,18 @@ from products.serializers import ProductCategoryReadSerializer, ProductReadSeria
 
 
 class ProductCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List and Retrieve product categories
+    """
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryReadSerializer
     permission_classes = (permissions.AllowAny, )
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    CRUD products
+    """
     queryset = Product.objects.all()
 
     def get_serializer_class(self):
