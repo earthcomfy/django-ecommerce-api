@@ -10,15 +10,13 @@ class ProductCategoryReadSerializer(serializers.ModelSerializer):
 
 
 class ProductReadSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField(read_only=True)
+    seller = serializers.CharField(
+        source='seller.get_full_name', read_only=True)
     category = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Product
         fields = '__all__'
-
-    def get_full_name(self, obj):
-        return f'{obj.seller.first_name} {obj.seller.last_name}'
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
