@@ -8,3 +8,13 @@ class PaymentOptionSerializer(serializers.ModelSerializer):
         model = Payment
         fields = ('id', 'payment_option', 'order')
         read_only_fields = ('order', )
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    buyer = serializers.CharField(
+        source='order.buyer.get_full_name', read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = ('id', 'buyer', 'status', 'payment_option',
+                  'order', 'created_at', 'updated_at')
