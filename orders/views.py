@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions, viewsets, generics
+from rest_framework import viewsets, generics
 
 from orders.models import Order, OrderItem
-from orders.permissions import IsBuyerOrAdmin, IsOrderByBuyerOrAdmin, IsOrderPending
+from orders.permissions import IsOrderByBuyerOrAdmin, IsOrderItemByBuyerOrAdmin, IsOrderPending
 from orders.serializers import OrderItemSerializer, OrderReadSerializer, OrderWriteSerializer
 from payment.models import Payment
 from payment.serializers import PaymentOptionSerializer
@@ -16,7 +16,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = (IsOrderByBuyerOrAdmin, )
+    permission_classes = (IsOrderItemByBuyerOrAdmin, )
 
     def get_queryset(self):
         res = super().get_queryset()
@@ -31,8 +31,11 @@ class OrderItemViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     """
     CRUD orders of a user
+
+    Only owner of the order are permitted for CRUD operation.
     """
     queryset = Order.objects.all()
+    permission_classes = [IsOrderByBuyerOrAdmin]
 
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update', 'destroy'):
@@ -40,11 +43,14 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return OrderReadSerializer
 
+    def get_queryset(self):
+        res = super().get_queryset()
+        user_id = self.kwargs.get('user_id')
+        return res.filter(buyer=user_id)
+
     def get_permissions(self):
         if self.action in ('update', 'partial_update', 'destroy'):
-            self.permission_classes = (IsBuyerOrAdmin, IsOrderPending, )
-        else:
-            self.permission_classes = (permissions.IsAuthenticated, )
+            self.permission_classes += [IsOrderPending]
 
         return super().get_permissions()
 

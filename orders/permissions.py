@@ -1,23 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from orders.models import Order
 
 
-class IsBuyerOrAdmin(BasePermission):
-    """
-    Check if authenticated user is buyer of the product or admin
-    """
-
-    def has_permission(self, request, view):
-        return request.user.is_authenticated is True
-
-    def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return True
-
-        return obj.buyer == request.user or request.user.is_staff
+User = get_user_model()
 
 
 class IsOrderPending(BasePermission):
@@ -27,10 +16,12 @@ class IsOrderPending(BasePermission):
     message = _('Updating or deleting closed order is not allowed.')
 
     def has_object_permission(self, request, view, obj):
+        if view.action in ('retrieve',):
+            return True
         return obj.status == 'P'
 
 
-class IsOrderByBuyerOrAdmin(BasePermission):
+class IsOrderItemByBuyerOrAdmin(BasePermission):
     """
     Check if order item is owned by appropriate buyer or admin
     """
@@ -42,3 +33,17 @@ class IsOrderByBuyerOrAdmin(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.order.buyer == request.user or request.user.is_staff
+
+
+class IsOrderByBuyerOrAdmin(BasePermission):
+    """
+    Check if order is owned by appropriate buyer or admin
+    """
+
+    def has_permission(self, request, view):
+        user_id = view.kwargs.get('user_id')
+        user = get_object_or_404(User, id=user_id)
+        return user == request.user or request.user.is_staff
+
+    def has_object_permission(self, request, view, obj):
+        return obj.buyer == request.user or request.user.is_staff
