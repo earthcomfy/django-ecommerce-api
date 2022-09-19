@@ -29,6 +29,13 @@ class Order(models.Model):
     def __str__(self):
         return self.buyer.get_full_name()
 
+    @cached_property
+    def total_cost(self):
+        """
+        Total cost of all the items in an order
+        """
+        return round(sum([order_item.cost for order_item in self.order_items.all()]), 2)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(

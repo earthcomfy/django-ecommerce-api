@@ -40,11 +40,15 @@ class OrderReadSerializer(serializers.ModelSerializer):
     """
     buyer = serializers.CharField(source='buyer.get_full_name', read_only=True)
     order_items = OrderItemSerializer(read_only=True, many=True)
+    total_cost = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'buyer', 'order_items',
+        fields = ('id', 'buyer', 'order_items', 'total_cost',
                   'status', 'created_at', 'updated_at')
+
+    def get_total_cost(self, obj):
+        return obj.total_cost
 
 
 class OrderWriteSerializer(serializers.ModelSerializer):
