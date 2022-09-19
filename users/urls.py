@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    AddressAPIView,
     ProfileAPIView,
     SendOrResendSMSAPIView,
     UserAPIView,
@@ -29,5 +30,6 @@ urlpatterns = [
 
     path('profile/', ProfileAPIView.as_view(), name='profile_detail'),
     path('', UserAPIView.as_view(), name='user_detail'),
+    path('profile/address/', AddressAPIView.as_view(), name='address_detail'),
 
 ]

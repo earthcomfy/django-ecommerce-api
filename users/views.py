@@ -15,6 +15,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 from users.models import PhoneNumber, Profile
 from users.serializers import (
+    AddressSerializer,
     PhoneNumberSerializer,
     ProfileSerializer,
     UserLoginSerializer,
@@ -145,3 +146,15 @@ class UserAPIView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class AddressAPIView(RetrieveUpdateAPIView):
+    """
+    Get, Update user address
+    """
+    queryset = Profile.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user.profile

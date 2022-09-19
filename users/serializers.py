@@ -194,3 +194,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'email', 'phone_number', 'first_name',
                   'last_name', 'is_active', 'profile',)
+
+
+class AddressSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('id', 'country', 'city', 'postal_code', )
