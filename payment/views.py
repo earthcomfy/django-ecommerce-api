@@ -50,16 +50,51 @@ class StripeCheckoutSessionCreateAPIView(views.APIView):
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=order_items,
+            metadata={
+                "order_id": order.id
+            },
             mode='payment',
             success_url=settings.PAYMENT_SUCCESS_URL,
             cancel_url=settings.PAYMENT_CANCEL_URL
         )
 
-        payment = get_object_or_404(Payment, order=self.kwargs.get('order_id'))
-        payment.status = 'C'
-        payment.save()
-
-        order.status = 'C'
-        order.save()
-
         return Response({'sessionId': checkout_session['id']}, status=status.HTTP_201_CREATED)
+
+
+class StripeWebhookView(views.APIView):
+    def post(self, request, format=None):
+        payload = request.body
+        endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        event = None
+
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret)
+        except ValueError as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except stripe.error.SignatureVerificationError as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if event['type'] == 'checkout.session.completed':
+            session = event['data']['object']
+            customer_email = session['customer_details']['email']
+            order_id = session['metadata']['order_id']
+
+            print('Payment successfull')
+
+            payment = get_object_or_404(Payment, order=order_id)
+            payment.status = 'C'
+            payment.save()
+
+            order = get_object_or_404(Order, id=order_id)
+            order.status = 'C'
+            order.save()
+
+            # TODO - Decrease product quantity
+
+            # TODO - send email ...
+
+        # Can handle other events here.
+
+        return Response(status=status.HTTP_200_OK)
