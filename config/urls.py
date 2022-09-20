@@ -13,9 +13,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('users.urls', namespace='users')),
     path('api/products/', include('products.urls', namespace='products')),
-    path('api/orders/<int:user_id>/', include('orders.urls', namespace='orders')),
+    path('api/user/orders/',
+         include('orders.urls', namespace='orders')),
     path('api/carts/', include('cart.urls', namespace='cart')),
-    path('api/payments/<int:user_id>/',
+    path('api/user/payments/',
          include('payment.urls', namespace='payment')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 

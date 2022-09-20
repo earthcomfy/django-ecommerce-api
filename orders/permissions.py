@@ -41,9 +41,7 @@ class IsOrderByBuyerOrAdmin(BasePermission):
     """
 
     def has_permission(self, request, view):
-        user_id = view.kwargs.get('user_id')
-        user = get_object_or_404(User, id=user_id)
-        return user == request.user or request.user.is_staff
+        return request.user.is_authenticated is True
 
     def has_object_permission(self, request, view, obj):
         return obj.buyer == request.user or request.user.is_staff

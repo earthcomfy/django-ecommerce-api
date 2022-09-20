@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
 
 from orders.models import Order, OrderItem
 from orders.permissions import IsOrderByBuyerOrAdmin, IsOrderItemByBuyerOrAdmin, IsOrderPending
@@ -43,8 +43,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         res = super().get_queryset()
-        user_id = self.kwargs.get('user_id')
-        return res.filter(buyer=user_id)
+        user = self.request.user
+        return res.filter(buyer=user)
 
     def get_permissions(self):
         if self.action in ('update', 'partial_update', 'destroy'):

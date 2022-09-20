@@ -18,8 +18,8 @@ class PaymentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         res = super().get_queryset()
-        user_id = self.kwargs.get('user_id')
-        return res.filter(order__buyer=user_id)
+        user = self.request.user
+        return res.filter(order__buyer=user)
 
 
 class StripeCheckoutSessionCreateAPIView(views.APIView):
