@@ -5,6 +5,7 @@ from rest_framework.response import Response
 import stripe
 
 from payment.models import Payment
+from payment.permissions import IsPaymentByUser, IsPaymentForOrderNotCompleted, IsPaymentPending
 from payment.serializers import PaymentSerializer
 from orders.models import Order
 
@@ -15,14 +16,23 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    permission_classes = [IsPaymentByUser]
 
     def get_queryset(self):
         res = super().get_queryset()
         user = self.request.user
         return res.filter(order__buyer=user)
 
+    def get_permissions(self):
+        if self.action in ('update', 'partial_update', 'destroy'):
+            self.permission_classes += [IsPaymentPending]
+
+        return super().get_permissions()
+
 
 class StripeCheckoutSessionCreateAPIView(views.APIView):
+    permission_classes = (IsPaymentForOrderNotCompleted, )
+
     def post(self, request, *args, **kwargs):
         order = get_object_or_404(Order, id=self.kwargs.get('order_id'))
 

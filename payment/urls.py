@@ -11,7 +11,7 @@ router.register(r'', PaymentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('create-checkout-session/<int:order_id>/',
+    path('stripe/create-checkout-session/<int:order_id>/',
          StripeCheckoutSessionCreateAPIView.as_view(), name='checkout_session'),
     path('stripe/webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
 ]

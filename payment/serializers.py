@@ -11,3 +11,4 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = ('id', 'buyer', 'status', 'payment_option',
                   'order', 'created_at', 'updated_at')
+        read_only_fields = ('status', )

@@ -1,12 +1,8 @@
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import BasePermission
 
 from orders.models import Order
-
-
-User = get_user_model()
 
 
 class IsOrderPending(BasePermission):
