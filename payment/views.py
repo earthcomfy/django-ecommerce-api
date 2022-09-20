@@ -71,7 +71,7 @@ class StripeCheckoutSessionCreateAPIView(views.APIView):
         return Response({'sessionId': checkout_session['id']}, status=status.HTTP_201_CREATED)
 
 
-class StripeWebhookView(views.APIView):
+class StripeWebhookAPIView(views.APIView):
     def post(self, request, format=None):
         payload = request.body
         endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
