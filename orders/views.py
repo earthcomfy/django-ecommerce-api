@@ -4,8 +4,6 @@ from rest_framework import viewsets, generics
 from orders.models import Order, OrderItem
 from orders.permissions import IsOrderByBuyerOrAdmin, IsOrderItemByBuyerOrAdmin, IsOrderPending
 from orders.serializers import OrderItemSerializer, OrderReadSerializer, OrderWriteSerializer
-from payment.models import Payment
-from payment.serializers import PaymentOptionSerializer
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):
@@ -53,21 +51,3 @@ class OrderViewSet(viewsets.ModelViewSet):
             self.permission_classes += [IsOrderPending]
 
         return super().get_permissions()
-
-
-class PaymentOptionCreateAPIView(generics.CreateAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentOptionSerializer
-
-    def perform_create(self, serializer):
-        order = get_object_or_404(Order, id=self.kwargs.get('order_id'))
-        serializer.save(order=order)
-
-
-class PaymentOptionAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentOptionSerializer
-
-    def get_object(self):
-        order_id = self.kwargs.get('order_id')
-        return Payment.objects.filter(order=order_id).first()

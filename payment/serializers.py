@@ -3,13 +3,6 @@ from rest_framework import serializers
 from payment.models import Payment
 
 
-class PaymentOptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = ('id', 'payment_option', 'order')
-        read_only_fields = ('order', )
-
-
 class PaymentSerializer(serializers.ModelSerializer):
     buyer = serializers.CharField(
         source='order.buyer.get_full_name', read_only=True)
