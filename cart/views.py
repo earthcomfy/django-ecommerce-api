@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import RetrieveAPIView
 
 from cart.models import Cart, CartItem
-from cart.permissions import IsCartByOwnerOrAdmin, IsUserOwner
+from cart.permissions import IsCartItemByOwnerOrAdmin, IsUserCartOwner
 from cart.serializers import CartItemSerializer, CartReadSerializer
 
 
-class CartItemViewSet(viewsets.ModelViewSet):
+class CartItemViewSet(ModelViewSet):
     """
     CRUD cart items that are associated with the current cart id.
 
@@ -14,22 +15,25 @@ class CartItemViewSet(viewsets.ModelViewSet):
     """
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    permission_classes = (IsCartByOwnerOrAdmin, )
+    permission_classes = (IsCartItemByOwnerOrAdmin, )
 
     def get_queryset(self):
         res = super().get_queryset()
-        cart_id = self.kwargs.get('cart_id')
-        return res.filter(cart__id=cart_id)
+        cart = self.request.user.cart
+        return res.filter(cart=cart)
 
     def perform_create(self, serializer):
         cart = get_object_or_404(Cart, id=self.kwargs.get('cart_id'))
         serializer.save(cart=cart)
 
 
-class CartViewSet(viewsets.ReadOnlyModelViewSet):
+class CartAPIView(RetrieveAPIView):
     """
     Read only view of a cart model and its items
     """
     queryset = Cart.objects.all()
     serializer_class = CartReadSerializer
-    permission_classes = (IsUserOwner, )
+    permission_classes = (IsUserCartOwner, )
+
+    def get_object(self):
+        return self.request.user.cart

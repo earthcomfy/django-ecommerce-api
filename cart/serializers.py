@@ -33,7 +33,6 @@ class CartItemSerializer(serializers.ModelSerializer):
             error = {'product': _('Product already exists in your cart.')}
             raise serializers.ValidationError(error)
 
-        # TODO - Create a custom permission to handle this case and use it in the views.
         if self.context['request'].user == product.seller:
             error = _('Adding your own product to your cart is not allowed')
             raise exceptions.PermissionDenied(error)
