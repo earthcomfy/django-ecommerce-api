@@ -1,19 +1,32 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, views, status
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
 import stripe
 
 from payment.models import Payment
-from payment.permissions import IsPaymentByUser, IsPaymentForOrderNotCompleted, IsPaymentPending
-from payment.serializers import PaymentSerializer
+from payment.permissions import (
+    DoesOrderHaveAddress,
+    IsOrderPendingWhenCheckout,
+    IsPaymentByUser,
+    IsPaymentForOrderNotCompleted,
+    IsPaymentPending
+)
+from payment.serializers import CheckoutSerializer, PaymentSerializer
 from orders.models import Order
+from orders.permissions import IsOrderByBuyerOrAdmin
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-class PaymentViewSet(viewsets.ModelViewSet):
+class PaymentViewSet(ModelViewSet):
+    """
+    CRUD payment for an order
+    """
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = [IsPaymentByUser]
@@ -30,8 +43,29 @@ class PaymentViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
 
-class StripeCheckoutSessionCreateAPIView(views.APIView):
-    permission_classes = (IsPaymentForOrderNotCompleted, )
+class CheckoutAPIView(RetrieveUpdateAPIView):
+    """
+    Retrieve billing address, shipping address and payment of an order
+
+    Create or Update billing address, shipping address and payment of an order.
+    """
+    queryset = Order.objects.all()
+    serializer_class = CheckoutSerializer
+    permission_classes = [IsOrderByBuyerOrAdmin]
+
+    def get_permissions(self):
+        if self.request.method in ('PUT', 'PATCH'):
+            self.permission_classes += [IsOrderPendingWhenCheckout]
+
+        return super().get_permissions()
+
+
+class StripeCheckoutSessionCreateAPIView(APIView):
+    """
+    Create and return checkout session ID for order payment of type 'Stripe'
+    """
+    permission_classes = (IsPaymentForOrderNotCompleted,
+                          DoesOrderHaveAddress, )
 
     def post(self, request, *args, **kwargs):
         order = get_object_or_404(Order, id=self.kwargs.get('order_id'))
@@ -71,7 +105,11 @@ class StripeCheckoutSessionCreateAPIView(views.APIView):
         return Response({'sessionId': checkout_session['id']}, status=status.HTTP_201_CREATED)
 
 
-class StripeWebhookAPIView(views.APIView):
+class StripeWebhookAPIView(APIView):
+    """
+    Stripe webhook API view to handle checkout session completed and other events.
+    """
+
     def post(self, request, format=None):
         payload = request.body
         endpoint_secret = settings.STRIPE_WEBHOOK_SECRET

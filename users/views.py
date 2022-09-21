@@ -8,14 +8,16 @@ from rest_framework.generics import (
     RetrieveUpdateAPIView,
 )
 from rest_framework import permissions
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from dj_rest_auth.views import LoginView
 from dj_rest_auth.registration.views import RegisterView, SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
-from users.models import PhoneNumber, Profile
+from users.models import Address, PhoneNumber, Profile
+from users.permissions import IsUserAddressOwner, IsUserProfileOwner
 from users.serializers import (
-    AddressSerializer,
+    AddressReadOnlySerializer,
     PhoneNumberSerializer,
     ProfileSerializer,
     UserLoginSerializer,
@@ -130,7 +132,7 @@ class ProfileAPIView(RetrieveUpdateAPIView):
     """
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsUserProfileOwner,)
 
     def get_object(self):
         return self.request.user.profile
@@ -148,13 +150,15 @@ class UserAPIView(RetrieveAPIView):
         return self.request.user
 
 
-class AddressAPIView(RetrieveUpdateAPIView):
+class AddressViewSet(ReadOnlyModelViewSet):
     """
-    Get, Update user address
+    List and Retrieve user addresses
     """
-    queryset = Profile.objects.all()
-    serializer_class = AddressSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Address.objects.all()
+    serializer_class = AddressReadOnlySerializer
+    permission_classes = (IsUserAddressOwner,)
 
-    def get_object(self):
-        return self.request.user.profile
+    def get_queryset(self):
+        res = super().get_queryset()
+        user = self.request.user
+        return res.filter(user=user)

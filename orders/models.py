@@ -21,9 +21,9 @@ class Order(models.Model):
     status = models.CharField(
         max_length=1, choices=STATUS_CHOICES, default=PENDING)
     shipping_address = models.ForeignKey(
-        Address, related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
+        Address, related_name='shipping_orders', on_delete=models.SET_NULL, blank=True, null=True)
     billing_address = models.ForeignKey(
-        Address, related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+        Address, related_name='billing_orders', on_delete=models.SET_NULL, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -44,8 +44,8 @@ class OrderReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'buyer', 'order_items', 'total_cost',
-                  'status', 'created_at', 'updated_at')
+        fields = ('id', 'buyer', 'shipping_address', 'billing_address', 'payment',
+                  'order_items', 'total_cost', 'status', 'created_at', 'updated_at')
 
     def get_total_cost(self, obj):
         return obj.total_cost
@@ -54,6 +54,9 @@ class OrderReadSerializer(serializers.ModelSerializer):
 class OrderWriteSerializer(serializers.ModelSerializer):
     """
     Serializer class for writing orders
+
+    Shipping address, billing address and payment are not included here
+    They will be created/updated on checkout
     """
     buyer = serializers.HiddenField(default=serializers.CurrentUserDefault())
     order_items = OrderItemSerializer(many=True)
@@ -62,6 +65,7 @@ class OrderWriteSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'buyer', 'status', 'order_items',
                   'created_at', 'updated_at',)
+        read_only_fields = ('status', )
 
     def create(self, validated_data):
         orders_data = validated_data.pop('order_items')
@@ -75,9 +79,6 @@ class OrderWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         orders_data = validated_data.pop('order_items', None)
         orders = list((instance.order_items).all())
-
-        instance.status = validated_data.get('status', instance.status)
-        instance.save()
 
         if orders_data:
             for order_data in orders_data:

@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import (
-    AddressAPIView,
+    AddressViewSet,
     ProfileAPIView,
     SendOrResendSMSAPIView,
     UserAPIView,
@@ -12,8 +13,10 @@ from .views import (
 
 app_name = 'users'
 
-urlpatterns = [
+router = DefaultRouter()
+router.register(r'', AddressViewSet)
 
+urlpatterns = [
     path('register/', UserRegisterationAPIView.as_view(), name='user_register'),
     path('login/', UserLoginAPIView.as_view(), name='user_login'),
 
@@ -28,8 +31,8 @@ urlpatterns = [
         name='verify_phone_number'
     ),
 
-    path('profile/', ProfileAPIView.as_view(), name='profile_detail'),
     path('', UserAPIView.as_view(), name='user_detail'),
-    path('profile/address/', AddressAPIView.as_view(), name='address_detail'),
+    path('profile/', ProfileAPIView.as_view(), name='profile_detail'),
+    path('profile/address/', include(router.urls)),
 
 ]

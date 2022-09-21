@@ -104,6 +104,9 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ('-created_at', )
+
     def __str__(self):
         return self.user.get_full_name()
 
@@ -116,7 +119,7 @@ class Address(models.Model):
     ADDRESS_CHOICES = ((BILLING, _('billing')), (SHIPPING, _('shipping')))
 
     user = models.ForeignKey(
-        User, related_name="address", on_delete=models.CASCADE)
+        User, related_name='addresses', on_delete=models.CASCADE)
     address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
     default = models.BooleanField(default=False)
     country = CountryField()
@@ -127,6 +130,9 @@ class Address(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at', )
 
     def __str__(self):
         return self.user.get_full_name()
