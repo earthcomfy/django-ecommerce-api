@@ -2,19 +2,22 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 from orders.models import Order, OrderItem
-from orders.permissions import IsOrderByBuyerOrAdmin, IsOrderItemByBuyerOrAdmin, IsOrderPending
+from orders.permissions import (
+    IsOrderByBuyerOrAdmin,
+    IsOrderItemByBuyerOrAdmin,
+    IsOrderItemPending,
+    IsOrderPending
+)
 from orders.serializers import OrderItemSerializer, OrderReadSerializer, OrderWriteSerializer
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):
     """
     CRUD order items that are associated with the current order id.
-
-    Only owner of the ordered items are permitted for CRUD operation.
     """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = (IsOrderItemByBuyerOrAdmin, )
+    permission_classes = [IsOrderItemByBuyerOrAdmin]
 
     def get_queryset(self):
         res = super().get_queryset()
@@ -25,12 +28,16 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         order = get_object_or_404(Order, id=self.kwargs.get('order_id'))
         serializer.save(order=order)
 
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            self.permission_classes += [IsOrderItemPending]
+
+        return super().get_permissions()
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     """
     CRUD orders of a user
-
-    Only owner of the order are permitted for CRUD operation.
     """
     queryset = Order.objects.all()
     permission_classes = [IsOrderByBuyerOrAdmin]

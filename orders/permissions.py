@@ -41,3 +41,25 @@ class IsOrderByBuyerOrAdmin(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.buyer == request.user or request.user.is_staff
+
+
+class IsOrderItemPending(BasePermission):
+    """
+    Check the status of order is pending or completed before creating, updating and deleting order items
+    """
+    message = _(
+        'Creating, updating or deleting order items for a closed order is not allowed.')
+
+    def has_permission(self, request, view):
+        order_id = view.kwargs.get('order_id')
+        order = get_object_or_404(Order, id=order_id)
+
+        if view.action in ('list', ):
+            return True
+
+        return order.status == 'P'
+
+    def has_object_permission(self, request, view, obj):
+        if view.action in ('retrieve',):
+            return True
+        return obj.order.status == 'P'

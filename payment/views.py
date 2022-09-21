@@ -45,9 +45,7 @@ class PaymentViewSet(ModelViewSet):
 
 class CheckoutAPIView(RetrieveUpdateAPIView):
     """
-    Retrieve billing address, shipping address and payment of an order
-
-    Create or Update billing address, shipping address and payment of an order.
+    Create, Retrieve, Update billing address, shipping address and payment of an order
     """
     queryset = Order.objects.all()
     serializer_class = CheckoutSerializer
