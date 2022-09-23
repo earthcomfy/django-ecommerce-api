@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'phonenumber_field',
     'corsheaders',
+    'drf_spectacular',
 
     # Local apps
     'users',
@@ -151,6 +152,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SITE_ID = 1
@@ -203,3 +205,12 @@ PAYMENT_CANCEL_URL = config('PAYMENT_CANCEL_URL')
 # Celery
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
+
+
+# DRF Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Ecommerce API',
+    'DESCRIPTION': 'An Ecommerce API built using Django Rest Framework',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}

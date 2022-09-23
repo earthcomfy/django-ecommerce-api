@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from dj_rest_auth.registration.views import VerifyEmailView, ResendEmailVerificationView
 from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView, PasswordChangeView, LogoutView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from users.views import GoogleLogin
 
@@ -45,3 +46,11 @@ urlpatterns = [
 
 # Media Assets
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+# Schema URLs
+urlpatterns += [
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('', SpectacularSwaggerView.as_view(
+        url_name='schema'), name='swagger-ui'),
+]
