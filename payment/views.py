@@ -18,6 +18,7 @@ from payment.permissions import (
 from payment.serializers import CheckoutSerializer, PaymentSerializer
 from orders.models import Order
 from orders.permissions import IsOrderByBuyerOrAdmin
+from payment.tasks import send_payment_success_email_task
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -139,7 +140,7 @@ class StripeWebhookAPIView(APIView):
 
             # TODO - Decrease product quantity
 
-            # TODO - send email ...
+            send_payment_success_email_task.delay(customer_email)
 
         # Can handle other events here.
 
