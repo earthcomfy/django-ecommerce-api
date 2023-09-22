@@ -22,10 +22,10 @@ services:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-  
+
   redis:
     image: redis:7
-  
+
   celery:
     build: .
     command: celery -A config worker -l info
