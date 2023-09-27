@@ -15,10 +15,7 @@ class PhoneNumberAuthBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
         try:
-            number = phonenumbers.parse(
-                username,
-                settings.PHONENUMBER_DEFAULT_REGION
-            )
+            number = phonenumbers.parse(username, settings.PHONENUMBER_DEFAULT_REGION)
             if not phonenumbers.is_valid_number(number):
                 return
             try:
