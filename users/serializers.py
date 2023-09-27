@@ -140,7 +140,7 @@ class PhoneNumberSerializer(serializers.ModelSerializer):
     def validate_phone_number(self, value):
         try:
             queryset = User.objects.get(phone__phone_number=value)
-            if queryset.phone.is_verified == True:
+            if queryset.phone.is_verified:
                 err_message = _("Phone number is already verified")
                 raise serializers.ValidationError(err_message)
 

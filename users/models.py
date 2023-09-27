@@ -75,7 +75,7 @@ class PhoneNumber(models.Model):
         if (
             not self.is_security_code_expired()
             and security_code == self.security_code
-            and self.is_verified == False
+            and not self.is_verified
         ):
             self.is_verified = True
             self.save()

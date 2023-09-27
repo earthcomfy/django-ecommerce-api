@@ -38,7 +38,7 @@ class UserRegisterationAPIView(RegisterView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
         response_data = ""

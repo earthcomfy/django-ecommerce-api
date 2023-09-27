@@ -121,9 +121,9 @@ class StripeWebhookAPIView(APIView):
 
         try:
             event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-        except ValueError as e:
+        except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        except stripe.error.SignatureVerificationError as e:
+        except stripe.error.SignatureVerificationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if event["type"] == "checkout.session.completed":
