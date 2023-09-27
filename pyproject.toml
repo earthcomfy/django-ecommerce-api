@@ -16,3 +16,11 @@ exclude = '''
   | migrations
 )/
 '''
+
+[tool.isort]
+profile = "django"
+combine_as_imports = true
+include_trailing_comma = true
+line_length = 88
+multi_line_output = 3
+known_first_party = ["config"]

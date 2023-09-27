@@ -1,12 +1,14 @@
+import stripe
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import RetrieveUpdateAPIView
-from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-import stripe
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
+from orders.models import Order
+from orders.permissions import IsOrderByBuyerOrAdmin
 from payment.models import Payment
 from payment.permissions import (
     DoesOrderHaveAddress,
@@ -16,10 +18,7 @@ from payment.permissions import (
     IsPaymentPending,
 )
 from payment.serializers import CheckoutSerializer, PaymentSerializer
-from orders.models import Order
-from orders.permissions import IsOrderByBuyerOrAdmin
 from payment.tasks import send_payment_success_email_task
-
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

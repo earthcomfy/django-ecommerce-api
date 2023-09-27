@@ -1,6 +1,7 @@
-from pathlib import Path
 import os
-from decouple import config, Csv
+from pathlib import Path
+
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

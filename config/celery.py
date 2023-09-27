@@ -1,8 +1,7 @@
 import os
 
-from decouple import config
 from celery import Celery
-
+from decouple import config
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", config("DJANGO_SETTINGS_MODULE"))
 app = Celery("config")

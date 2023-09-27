@@ -1,18 +1,17 @@
-from django.utils.translation import gettext as _
-from django.contrib.auth import get_user_model
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import (
-    RetrieveAPIView,
-    GenericAPIView,
-    RetrieveUpdateAPIView,
-)
-from rest_framework import permissions
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from dj_rest_auth.views import LoginView
-from dj_rest_auth.registration.views import RegisterView, SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import RegisterView, SocialLoginView
+from dj_rest_auth.views import LoginView
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext as _
+from rest_framework import permissions, status
+from rest_framework.generics import (
+    GenericAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateAPIView,
+)
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from users.models import Address, PhoneNumber, Profile
 from users.permissions import IsUserAddressOwner, IsUserProfileOwner
@@ -25,7 +24,6 @@ from users.serializers import (
     UserSerializer,
     VerifyPhoneNumberSerialzier,
 )
-
 
 User = get_user_model()
 

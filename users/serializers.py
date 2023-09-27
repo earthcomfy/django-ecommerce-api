@@ -1,19 +1,18 @@
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.conf import settings
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext as _
+from django_countries.serializers import CountryFieldMixin
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from dj_rest_auth.registration.serializers import RegisterSerializer
-from phonenumber_field.serializerfields import PhoneNumberField
-from django_countries.serializers import CountryFieldMixin
 
 from .exceptions import (
+    AccountDisabledException,
     AccountNotRegisteredException,
     InvalidCredentialsException,
-    AccountDisabledException,
 )
 from .models import Address, PhoneNumber, Profile
-
 
 User = get_user_model()
 

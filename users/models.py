@@ -1,16 +1,16 @@
 import datetime
-from django.db import models
-from django.utils import timezone
-from django.utils.translation import gettext as _
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import models
+from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.utils.translation import gettext as _
+from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import NotAcceptable
-from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from django_countries.fields import CountryField
-
+from twilio.rest import Client
 
 User = get_user_model()
 
