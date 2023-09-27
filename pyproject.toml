@@ -2,20 +2,6 @@
 line-length = 88
 target-version = ['py310']
 include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | migrations
-)/
-'''
 
 [tool.isort]
 profile = "django"
