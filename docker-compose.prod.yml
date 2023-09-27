@@ -24,10 +24,10 @@ services:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-  
+
   redis:
     image: redis:7
-  
+
   celery:
     build: .
     restart: always
@@ -40,7 +40,7 @@ services:
       - db
       - redis
       - web
-  
+
   nginx:
     build: ./nginx
     restart: always
