@@ -5,7 +5,7 @@ from rest_framework.permissions import BasePermission
 from orders.models import Order
 
 
-class IsPaymentByUser(BaseException):
+class IsPaymentByUser(BasePermission):
     """
     Check if payment belongs to the appropriate buyer or admin
     """
